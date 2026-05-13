@@ -1,0 +1,14 @@
+name: Lint
+
+on:
+  push:
+  schedule:
+    - cron: '0 8 * * 1'   # Segunda 08:00 UTC — drift do CRDs catalog
+  workflow_dispatch:
+
+jobs:
+  lint:
+    permissions:
+      contents: read
+      security-events: write   # SARIF upload (kube-linter)
+    uses: TourinhoM/org-ci-platform/.github/workflows/lint-k8s.yml@main

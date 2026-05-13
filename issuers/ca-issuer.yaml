@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: issuer
+spec:
+  # Issuer "de uso" — todo Certificate de workload aponta pra ele.
+  # Backing: Secret `lab-ca-bundle` gerado pela Certificate `lab-ca`
+  # no namespace cert-manager. cert-manager reconcilia em ordem
+  # (selfsigned-bootstrap -> lab-ca CR -> Secret pronto -> ca-issuer
+  # pronto -> Certificates de workload).
+  ca:
+    secretName: lab-ca-bundle

@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-bootstrap
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/component: issuer
+spec:
+  # Issuer "fundacao" — assina o proprio CA do lab.
+  # Nao deve ser usado por workload nenhum diretamente.
+  selfSigned: {}
