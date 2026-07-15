@@ -3,7 +3,7 @@ name: Lint
 on:
   push:
   schedule:
-    - cron: '0 8 * * 1'   # Segunda 08:00 UTC — drift do CRDs catalog
+    - cron: '0 8 * * 1'   # Segunda 08:00 UTC
   workflow_dispatch:
 
 jobs:

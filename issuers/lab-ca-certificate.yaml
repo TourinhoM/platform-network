@@ -7,19 +7,16 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/component: ca-bundle
 spec:
-  # Esta Certificate gera o CA interno do cluster. O Secret resultante
-  # (`lab-ca-bundle`) e referenciado pelo `ca-issuer` como backing CA.
-  # Lab-only — em prod seria um CA corporativo (AWS Private CA, Vault PKI, etc.).
+  # Gera o CA interno do cluster; Secret referenciado pelo ca-issuer.
   isCA: true
   commonName: lab-ca.homelab.local
   secretName: lab-ca-bundle
 
-  # 10 anos. CA sair de validade no homelab e sintoma de outras coisas
-  # quebradas antes.
+  # 10 anos
   duration: 87600h
   renewBefore: 720h  # 30 dias
 
-  # ECDSA P-256: payload menor que RSA 4096, suficiente pra TLS internal.
+  # ECDSA P-256
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -28,40 +25,3 @@ spec:
   issuerRef:
     name: selfsigned-bootstrap
     kind: ClusterIssuer
-
-# ---------------------------------------------------------------------
-# Variante producao: AWS Private CA (ACM PCA)
-# ---------------------------------------------------------------------
-#
-# Em prod com AWS, este arquivo nao existe — o CA vive na AWS PCA, ja
-# provisionado fora do cluster. O que muda:
-#
-# 1. Instalar o controller `aws-privateca-issuer`
-#    (https://github.com/cert-manager/aws-privateca-issuer) alem do
-#    cert-manager. IAM via IRSA (EKS) ou Pod Identity, com permissoes:
-#      acm-pca:IssueCertificate
-#      acm-pca:GetCertificate
-#      acm-pca:GetCertificateAuthorityCertificate
-#
-# 2. Substituir o `ca-issuer` (ClusterIssuer local) por um
-#    `AWSPCAClusterIssuer` apontando pro ARN do CA na AWS:
-#
-#    apiVersion: awspca.cert-manager.io/v1beta1
-#    kind: AWSPCAClusterIssuer
-#    metadata:
-#      name: aws-private-ca
-#    spec:
-#      arn: arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/abc-123
-#      region: us-east-1
-#
-# 3. Os arquivos em certificates/ ganham issuerRef apontando pro novo
-#    issuer (so muda o group + name):
-#
-#    issuerRef:
-#      group: awspca.cert-manager.io
-#      kind: AWSPCAClusterIssuer
-#      name: aws-private-ca
-#
-# Resultado: cert-manager continua sendo o ponto de integracao no
-# cluster (mesma API de Certificate), mas a confianca passa a vir de
-# um CA externo, auditavel via CloudTrail, com rotacao centralizada.

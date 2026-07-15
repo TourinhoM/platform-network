@@ -1,0 +1,19 @@
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: lab-ca-bundle
+  labels:
+    app.kubernetes.io/name: trust-manager
+    app.kubernetes.io/component: ca-bundle
+spec:
+  # Le direto do Secret gerado pelo Certificate lab-ca (lab-ca-certificate.yaml).
+  # RBAC do trust-manager pro recurso "secrets" e' um Role namespaced,
+  # escopado a app.trust.namespace (cert-manager) -- nao e' cluster-wide.
+  # Se o cert rotacionar, o Bundle atualiza sozinho, sem update manual.
+  sources:
+    - secret:
+        name: lab-ca-bundle
+        key: tls.crt
+  target:
+    configMap:
+      key: ca.crt

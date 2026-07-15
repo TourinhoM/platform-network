@@ -1,25 +1,9 @@
 # Polaris config pro deploy-cert-manager.
-#
-# Cobertura: Polaris escaneia recursos com pod-spec (Deployment,
-# StatefulSet, etc.). Este repo so contem CRDs do cert-manager
-# (ClusterIssuer, Certificate) — nenhum pod-spec. Polaris roda mas
-# nao encontra recursos pra avaliar.
-#
-# O arquivo existe pra paridade com os outros deploy-* e pra deixar
-# explicito que checks production-grade foram revisados.
-#
-# O Deployment do cert-manager controller em si nao vive neste repo —
-# vem do Helm chart referenciado em
-# `deploy-argocd/apps/applications/security-cert-manager.yaml`. Lint
-# do Deployment fica naquele caller (chart upstream pinned).
 
 checks:
-  # Out-of-scope: homelab single-node WSL
   priorityClassNotSet: ignore
   topologySpreadConstraint: ignore
   missingPodDisruptionBudget: ignore
   missingNetworkPolicy: ignore
   deploymentMissingReplicas: ignore
-
-  # Convencao app.kubernetes.io/instance que upstream charts nao seguem
   metadataAndInstanceMismatched: ignore
